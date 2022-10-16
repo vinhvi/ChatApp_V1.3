@@ -4,67 +4,126 @@ import {
   Text,
   View,
   TextInput,
+  Alert,
 } from "react-native";
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
+import { useForm } from "react-hook-form";
+import CustomInput from "../components/CustomTextinput/CustomTextInput";
+import CustomButton from "../components/CustomButton/CustomButton";
+import navigation from "../navigation";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { singupRoute } from "../src/API";
 
-export default class SignUpScreen extends Component {
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={styles.container}>
-        <View>
-          <Text style={{ fontWeight: "bold", fontSize: 35,marginTop:20, }}>Đăng Ký</Text>
-        </View>
-        <View style={styles.viewtxtInput}>
-          <TextInput
-            placeholder="Họ và Tên"
-            style={styles.textinput}
-          ></TextInput>
-          <TextInput
-            placeholder="Năm Sinh"
-            style={styles.textinput}
-          ></TextInput>
-          <TextInput
-            placeholder="Giới Tính"
-            style={styles.textinput}
-          ></TextInput>
-          <TextInput
-            placeholder="Số điện thoại"
-            style={styles.textinput}
-          ></TextInput>
-          <TextInput placeholder="Email" style={styles.textinput}></TextInput>
-          <TextInput
-            placeholder="Mật khẩu"
-            style={styles.textinput}
-          ></TextInput>
-          <TextInput
-            placeholder="Nhập lại mật khẩu"
-            style={styles.textinput}
-          ></TextInput>
-          <TouchableOpacity style={styles.DK}>
-            <Text style={{ color: "white", fontSize: 25 }}>Đăng Ký</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={{ fontWeight: "bold" }}>Bạn đã có tài khoản ?</Text>
-          <Text
-            style={{ fontWeight: "bold", marginLeft: 10, color: "#2847B7" }}
-            onPress={() => {
-              navigation.navigate("Login");
-            }}
-          >
-            Đăng nhập ?
-          </Text>
-        </View>
+export default function SignUpScreen() {
+  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSignUpPress = () => {
+    navigation.navigate("Login");
+  };
+
+  const onSignUpressed = async (data: any) => {
+    setLoading(true);
+    const name = data.name;
+    const email = data.email;
+    const password = data.password;
+    const password2 = data.password2;
+    const image =
+      "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+    if (password != password2) {
+      Alert.alert("Lỗi password nhập lại không khớp ");
+      setLoading(false);
+      return;
+    }
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      await axios.post(singupRoute, { name, email, password, image }, config);
+      Alert.alert("Đăng ký thành công!!");
+      navigation.navigate("Login");
+    } catch (errors) {
+      Alert.alert("Lỗi", errors.message);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <View style={styles.container}>
+      <View>
+        <Text style={{ fontWeight: "bold", fontSize: 35, marginTop: 20 }}>
+          Đăng Ký
+        </Text>
       </View>
-    );
-  }
+      <CustomInput
+        name="name"
+        placeholder="Nhập Name"
+        control={control}
+        rules={{ required: "Name không được trống" }}
+        secureTextEntry={undefined}
+      />
+      <CustomInput
+        name="email"
+        placeholder="Nhập Email"
+        control={control}
+        rules={{ required: "Email không được trống" }}
+        secureTextEntry={undefined}
+      />
+      <CustomInput
+        name="password"
+        placeholder="Nhập password"
+        secureTextEntry
+        control={control}
+        rules={{
+          required: "Password trống",
+          minLength: {
+            value: 3,
+            message: "Password phải có 8 ký tự",
+          },
+        }}
+      />
+      <CustomInput
+        name="password2"
+        placeholder="Nhập lại password"
+        secureTextEntry
+        control={control}
+        rules={{
+          required: "Password trống",
+          minLength: {
+            value: 3,
+            message: "Password phải có 8 ký tự",
+          },
+        }}
+      />
+      <CustomButton
+        text={loading ? "Loading..." : "Đăng ký"}
+        onPress={handleSubmit(onSignUpressed)}
+        bgColor={undefined}
+        fgColor={undefined}
+      />
+      <CustomButton
+        text="Bạn đã có tài khoản ? Đăng nhập ?"
+        type="TERTIARY"
+        onPress={onSignUpPress}
+        bgColor={undefined}
+        fgColor={undefined}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    justifyContent: "center",
+    padding: 20,
   },
   textinput: {
     fontSize: 20,

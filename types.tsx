@@ -40,6 +40,9 @@ export type User = {
   name: string;
   imageUri: string;
 };
+
+
+
 export type Message = {
   id: String;
   content: string;
