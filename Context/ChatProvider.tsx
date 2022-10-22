@@ -1,11 +1,12 @@
 // import React, { createContext, useContext, useEffect, useState } from "react";
+// import { User } from "../types";
 // import { useHistory } from "react-router-dom";
-// import { User } from "../../types";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const ChatContext = createContext(User);
+// const ChatContext = createContext();
 // // contextAPI: qly state of our app -> fetch state directly from 1 place
 // // truy cập accessAPI mọi nơi
-// const ChatProvider = ({ children }) => {
+// const ChatProvider = (data: any) => {
 //   const [selectedChat, setSelectedChat] = useState();
 //   const [user, setUser] = useState();
 //   const [notification, setNotification] = useState([]);
@@ -14,7 +15,7 @@
 //   const history = useHistory();
 
 //   useEffect(() => {
-//     const userInfo = JSON.parse(localStorage.getItem("userInfor") || "");
+//     const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 //     setUser(userInfo);
 //     if (!userInfo) {
 //       history.push("/");
@@ -34,7 +35,7 @@
 //         setChats,
 //       }}
 //     >
-//       {children}
+//       {data}
 //     </ChatContext.Provider>
 //   );
 // };

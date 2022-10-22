@@ -16,10 +16,12 @@ import {
   Alert,
 } from "react-native";
 import { loginRoute } from "../src/API";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  let STORAGE_KEY = "@user_input";
   const onSignInPressed = async (data: any) => {
     if (loading) {
       return;
@@ -33,10 +35,16 @@ export default function LoginScreen() {
           "Content-type": "application/json",
         },
       };
-      await axios.post(loginRoute, { email, password }, config);
+      const a = await axios.post(loginRoute, { email, password }, config);
+      console.log(a.data.token);
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, a.data.token);
+      } catch (err) {
+        console.log(err);
+      }
       navigation.navigate("Root");
-    } catch (errors) {
-      Alert.alert("Oops", errors.message);
+    } catch (error) {
+      console.log(error);
     }
     setLoading(false);
   };
@@ -84,49 +92,12 @@ export default function LoginScreen() {
         fgColor={undefined}
       />
       <CustomButton
-        text="Don't have an account? Create one"
+        text="Bạn chưa có tài khoản ? Đăng ký tài khoản ?"
         type="TERTIARY"
         onPress={onSignUpPress}
         bgColor={undefined}
         fgColor={undefined}
       />
-
-      {/* <View style={{ marginTop: 20 }}>
-        <Text style={{ textAlign: "center", fontWeight: "bold", fontSize: 40 }}>
-          Đăng Nhập
-        </Text>
-        <TextInput
-          placeholder="Nhập email"
-          style={styles.textinput}
-          value={"email"}
-        ></TextInput>
-        <TextInput
-          placeholder="Nhập mật khẩu"
-          style={styles.textinput}
-        ></TextInput>
-        <TouchableOpacity
-          style={styles.DN}
-          onPress={() => {
-            // navigation.navigate("Root");
-          }}
-        >
-          <Text style={{ fontSize: 25, fontWeight: "bold", color: "white" }}>
-            Đăng nhập
-          </Text>
-        </TouchableOpacity>
-      </View> */}
-      {/* <View style={styles.DK}>
-        <Text style={{ fontWeight: "bold" }}>Bạn chưa có tài khoản ?</Text>
-        <Text
-          style={{ fontWeight: "bold", marginLeft: 10, color: "#2847B7" }}
-          onPress={() => {
-            // navigation.navigate("SignUp");
-          }}
-        >
-          Đăng ký ?
-        </Text>
-      </View> */}
-
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
@@ -134,17 +105,9 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
   root: {
     alignItems: "center",
     padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
   },
   separator: {
     marginVertical: 30,
@@ -155,23 +118,5 @@ const styles = StyleSheet.create({
     marginTop: 50,
     width: 300,
     height: 200,
-  },
-  textinput: {
-    marginTop: 20,
-    height: 50,
-    width: 300,
-    borderBottomWidth: 1,
-    fontSize: 18,
-  },
-  DN: {
-    marginTop: 40,
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 20,
-    backgroundColor: "#2847B7",
-  },
-  DK: {
-    marginTop: 20,
-    flexDirection: "row",
   },
 });

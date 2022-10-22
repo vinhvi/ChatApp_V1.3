@@ -38,10 +38,8 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
 export type User = {
   id: String;
   name: string;
-  imageUri: string;
+  pic: string;
 };
-
-
 
 export type Message = {
   id: String;

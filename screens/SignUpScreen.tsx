@@ -5,6 +5,8 @@ import {
   View,
   TextInput,
   Alert,
+  Image,
+  ImagePickerIOS,
 } from "react-native";
 import React, { Component, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,10 +16,14 @@ import navigation from "../navigation";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { singupRoute } from "../src/API";
+import * as ImagePicker from "expo-image-picker";
 
 export default function SignUpScreen() {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const [uriImage, setUriImage] = useState(
+    "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+  );
   const {
     control,
     handleSubmit,
@@ -27,27 +33,68 @@ export default function SignUpScreen() {
   const onSignUpPress = () => {
     navigation.navigate("Login");
   };
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.cancelled) {
+      setUriImage(result.uri);
+      uploadphoto(uriImage);
+    }
+  };
+  const uploadphoto = (uri: any) => {
+    if (loading) {
+      return;
+    }
+    setLoading(true);
+
+    const data = new FormData();
+    data.append("file", uri);
+    data.append("upload_preset", "MongoChat04");
+    data.append("cloud_name", "dfgkg5eej");
+    fetch("https://api.cloudinary.com/v1_1/dfgkg5eej/image/upload", {
+      method: "post",
+      body: data,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        Alert.alert("Thành Công!!", "Đã upload ảnh");
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  };
 
   const onSignUpressed = async (data: any) => {
-    setLoading(true);
+    if (loading) {
+      return;
+    }
     const name = data.name;
     const email = data.email;
     const password = data.password;
     const password2 = data.password2;
-    const image =
-      "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
     if (password != password2) {
       Alert.alert("Lỗi password nhập lại không khớp ");
-      setLoading(false);
       return;
     }
+    setLoading(true);
     try {
       const config = {
         headers: {
           "Content-type": "application/json",
         },
       };
-      await axios.post(singupRoute, { name, email, password, image }, config);
+      await axios.post(
+        singupRoute,
+        { name, email, password, uriImage },
+        config
+      );
       Alert.alert("Đăng ký thành công!!");
       navigation.navigate("Login");
     } catch (errors) {
@@ -59,9 +106,22 @@ export default function SignUpScreen() {
   return (
     <View style={styles.container}>
       <View>
-        <Text style={{ fontWeight: "bold", fontSize: 35, marginTop: 20 }}>
+        <Text style={{ fontWeight: "bold", fontSize: 35, marginTop: 5 }}>
           Đăng Ký
         </Text>
+      </View>
+      <View style={styles.photo}>
+        <Image
+          source={{
+            uri: uriImage,
+          }}
+          style={styles.image}
+        />
+        <TouchableOpacity onPress={pickImage}>
+          <View style={styles.borderUpload}>
+            <Text style={styles.upload}>Chọn ảnh đại diện</Text>
+          </View>
+        </TouchableOpacity>
       </View>
       <CustomInput
         name="name"
@@ -103,6 +163,7 @@ export default function SignUpScreen() {
           },
         }}
       />
+
       <CustomButton
         text={loading ? "Loading..." : "Đăng ký"}
         onPress={handleSubmit(onSignUpressed)}
@@ -125,23 +186,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  textinput: {
-    fontSize: 20,
-    fontWeight: "bold",
-    borderBottomWidth: 1,
-    width: 300,
-    height: 50,
+  image: {
+    width: 150,
+    height: 150,
+    borderRadius: 150,
+  },
+  photo: {
+    alignItems: "center",
     marginTop: 10,
   },
-  viewtxtInput: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-  DK: {
-    marginTop: 30,
+  borderUpload: {
+    marginTop: 10,
     borderWidth: 1,
-    borderRadius: 20,
-    backgroundColor: "#2e78b7",
+    borderRadius: 10,
+    width: 150,
     alignItems: "center",
+    backgroundColor: "gray",
+  },
+  upload: {
+    fontWeight: "bold",
+    color: "white",
   },
 });

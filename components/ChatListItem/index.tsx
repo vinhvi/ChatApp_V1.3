@@ -6,7 +6,7 @@ import { ChatRoom } from "../../types";
 import style from "./style";
 
 export type ChatRoomProps = {
-  chatRoom: ChatRoom; 
+  chatRoom: ChatRoom;
 };
 const ChatListItem = (props: ChatRoomProps) => {
   const { chatRoom } = props;
@@ -16,14 +16,14 @@ const ChatListItem = (props: ChatRoomProps) => {
     navigation.navigate("ChatRoom", {
       id: chatRoom.id,
       name: user.name,
-    })
+    });
   };
 
   return (
     <TouchableNativeFeedback onPress={onclick}>
       <View style={style.container}>
         <View style={style.leftContainer}>
-          <Image source={{ uri: user.imageUri }} style={style.avatar} />
+          <Image source={{ uri: user.pic }} style={style.avatar} />
           <View style={style.midContainer}>
             <Text style={style.username}>{user.name}</Text>
             <Text numberOfLines={2} style={style.lastMessage}>
