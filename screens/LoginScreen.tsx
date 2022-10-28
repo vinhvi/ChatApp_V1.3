@@ -22,6 +22,7 @@ export default function LoginScreen() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   let STORAGE_KEY = "@user_input";
+  let STORAGE_KEY2 = "@user_id";
   const onSignInPressed = async (data: any) => {
     if (loading) {
       return;
@@ -39,6 +40,7 @@ export default function LoginScreen() {
       console.log(a.data.token);
       try {
         await AsyncStorage.setItem(STORAGE_KEY, a.data.token);
+        await AsyncStorage.setItem(STORAGE_KEY2, a.data._id);
       } catch (err) {
         console.log(err);
       }

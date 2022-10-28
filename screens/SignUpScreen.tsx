@@ -98,7 +98,7 @@ export default function SignUpScreen() {
       Alert.alert("Đăng ký thành công!!");
       navigation.navigate("Login");
     } catch (errors) {
-      Alert.alert("Lỗi", errors.message);
+      console.log(errors);
     }
     setLoading(false);
   };

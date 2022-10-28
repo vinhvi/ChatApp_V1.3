@@ -22,11 +22,9 @@ import ChatScreen from "../screens/ChatScreen";
 import ChatRoomScreen from "../screens/ChatRoomScreen";
 import ContactsScreen from "../screens/ContactsScreen";
 import TabTwoScreen from "../screens/TabTwoScreen";
-import {
-  RootStackParamList,
-  RootTabParamList,
-} from "../types";
+import { RootStackParamList, RootTabParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Navigation({
   colorScheme,
@@ -50,6 +48,20 @@ export default function Navigation({
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  // let STORAGE_KEY2 = "@chatName";
+  // const [chatName, setChatName] = React.useState("");
+  // React.useEffect(() => {
+  //   const xyz = async () => {
+  //     try {
+  //       const id = await AsyncStorage.getItem(STORAGE_KEY2);
+  //       setChatName(id);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+  //   xyz();
+  // });
+
   return (
     <Stack.Navigator
       screenOptions={{

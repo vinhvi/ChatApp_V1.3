@@ -36,19 +36,22 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> =
     NativeStackScreenProps<RootStackParamList>
   >;
 export type User = {
-  id: String;
+  _id: String;
   name: string;
   pic: string;
 };
 
 export type Message = {
   id: String;
+  sender: User;
   content: string;
+  chat: ChatRoom;
   createdAt: string;
-  user: User;
 };
 export type ChatRoom = {
-  id: String;
+  _id: String;
+  chatName: String;
+  isGroupChat: Boolean;
   users: User[];
-  lastMessage: Message;
+  latestMessage: Message;
 };

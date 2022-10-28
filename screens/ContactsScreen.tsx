@@ -1,24 +1,26 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import ContactListItem from "../components/ContactListItem";
 import { View } from "../components/Themed";
+import { getAllUserRoute } from "../src/API";
 // import { ChatState } from "../Context/ChatProvider";
 export default function ContactsScreen() {
   // const { user } = ChatState();
   const [users, setUsers] = useState([]);
+  let STORAGE_KEY = "@user_input";
   useEffect(() => {
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
     const fetchUsers = async () => {
       try {
-        const usersData = await axios.get(
-          "http: 192.168.1.25:5000/api/user/getAllUser",
-          config
-        );
+        const token = await AsyncStorage.getItem(STORAGE_KEY);
+        const config = {
+          headers: {
+            "Content-type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        };
+        const usersData = await axios.get(getAllUserRoute, config);
         setUsers(usersData.data);
       } catch (error) {
         console.log(error);

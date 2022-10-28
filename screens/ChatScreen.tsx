@@ -7,26 +7,36 @@ import { RootTabScreenProps } from "../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import io from "socket.io-client";
+import { getChatRom } from "../src/API";
 export default function ChatScreen({
   navigation,
 }: RootTabScreenProps<"Chats">) {
-  // const [chatRooms, setChatRooms] = useState();
+  const ENDPOINT = "http:192.168.1.25:5000";
+  var socket = io();
+  const [chatRooms, setChatRooms] = useState();
+  const [socketConnected, setSocketConnected] = useState(false);
   let STORAGE_KEY = "@user_input";
+  let STORAGE_KEY2 = "@chatID";
+  useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.on("connected", () => setSocketConnected(true)); // client nhận được rồi mơi save dô client
+  }, []);
+
   useEffect(() => {
     const abcd = async () => {
       try {
         const token = await AsyncStorage.getItem(STORAGE_KEY);
+        const chatID2 = await AsyncStorage.getItem(STORAGE_KEY2);
         const config = {
           headers: {
             "Content-type": "application/json",
             Authorization: "Bearer " + token,
           },
         };
-        const { data } = await axios.get(
-          `http:192.168.1.25:5000/api/chat`,
-          config
-        );
-        console.log(data);
+        const { data } = await axios.get(getChatRom, config);
+        setChatRooms(data);
+        socket.emit("join chat", chatID2);
       } catch (e) {
         console.log(e);
       }
