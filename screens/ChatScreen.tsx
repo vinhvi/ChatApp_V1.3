@@ -50,7 +50,9 @@ export default function ChatScreen({
       <FlatList
         style={{ width: "100%" }}
         data={chatRooms}
-        renderItem={({ item }) => <ChatListItem chatRoom={item} />}
+        renderItem={({ item }) => (
+          <ChatListItem chatRoom={item} key={item.id} />
+        )}
         keyExtractor={(item) => item.id}
       />
     </View>
